@@ -1,8 +1,7 @@
 # Dubugi Terminal
 ## Interactive cybersecurity portfolio
 
-### Interactive terminal-style cybersecurity portfolio built with React and TailwindCSS.
-
+### CYBER DETECTIVE DATABASE ONLINE // ACCESS GRANTED
 <img width="1916" height="862" alt="image" src="" />
 
 Available commands:
