@@ -2,6 +2,48 @@ import { useState } from "react";
 
 export default function Terminal() {
   const [input, setInput] = useState("");
+  const [theme, setTheme] = useState("matrix");
+
+  const themes = {
+    matrix: {
+      bg: "#050607",
+      panel: "#070a0c",
+      border: "#0f2a22",
+      primary: "#00ff99",
+      secondary: "#66ffcc",
+      input: "#ffffff",
+    },
+
+    noir: {
+      bg: "#0f0f12",
+      panel: "#17171c",
+      border: "#2a2a35",
+      primary: "#c792ea",
+      secondary: "#e6d5ff",
+      input: "#ffffff",
+    },
+
+    forensic: {
+      bg: "#071018",
+      panel: "#0b1722",
+      border: "#163041",
+      primary: "#4fd1ff",
+      secondary: "#b8ecff",
+      input: "#ffffff",
+    },
+
+    alert: {
+      bg: "#140909",
+      panel: "#1f1111",
+      border: "#522020",
+      primary: "#ff4d4d",
+      secondary: "#ffb3b3",
+      input: "#ffffff",
+    },
+  };
+
+  const currentTheme = themes[theme];
+
   const [logs, setLogs] = useState([
     {
       type: "system",
@@ -20,71 +62,170 @@ export default function Terminal() {
 ██║  ██║██║   ██║██╔══██╗██║   ██║██║   ██║██║
 ██████╔╝╚██████╔╝██████╔╝╚██████╔╝╚██████╔╝██║
 ╚═════╝  ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝ ╚═╝
-        CYBER DETECTIVE DATABASE
-  `;
+      CYBER DETECTIVE DATABASE
+`;
 
-  const handleCommand = (cmd) => {
-    let response = "";
+const handleCommand = (cmd) => {
+  let response = "";
 
-    switch (cmd.toLowerCase()) {
-      case "help":
-        response =
-          "COMMANDS:\n- cases (list active investigations)\n- profile (agent file)\n- evidence (latest findings)\n- clear (wipe terminal)";
-        break;
+  const command = cmd.toLowerCase().trim();
 
-      case "cases":
-        response =
-          "ACTIVE CASE FILES:\n[CASE-014] ...\n[CASE-021] ...\n[CASE-033] ...";
-        break;
+  switch (command) {
+    case "help":
+      response = `
+COMMANDS:
+- cases
+- profile
+- evidence
+- themes
+- theme [name]
+- clear
+        `;
+      break;
 
-      case "profile":
-        response =
-          "AGENT ID: Dubugi-07\nCLEARANCE: LEVEL 4\nSPECIALTY: Behavioral Cyber Forensics / SOC Analyst\nSTATUS: ACTIVE INVESTIGATION UNIT";
-        break;
+    case "cases":
+      response = `
+ACTIVE CASE FILES:
 
-      case "evidence":
-        response =
-          "EVIDENCE LOG:\n- ...\n- ...\n- ...";
-        break;
+[CASE-014] Phantom Data Leak
+[CASE-021] Black Market Identity Ring
+[CASE-033] Ghost Login Intrusion
+        `;
+      break;
 
-      case "clear":
-        setLogs([]);
-        return;
+    case "profile":
+      response = `
+AGENT ID: Dubugi-07
+CLEARANCE: LEVEL 4
+SPECIALTY: Behavioral Cyber Forensics / SOC Analyst
+STATUS: ACTIVE INVESTIGATION UNIT
+        `;
+      break;
 
-      default:
-        response = `Unknown command: ${cmd}. Type 'help' for guidance.`;
-    }
+    case "evidence":
+      response = `
+EVIDENCE LOG:
 
-    setLogs((prev) => [
-      ...prev,
-      { type: "input", text: `> ${cmd}` },
-      { type: "output", text: response },
-    ]);
-  };
+- encrypted packet cluster recovered
+- suspicious proxy chain detected
+- dark-web credential trace identified
+        `;
+      break;
+
+    case "themes":
+    case "theme":
+      response = `
+AVAILABLE THEMES:
+
+- matrix
+- noir
+- forensic
+- alert
+
+USAGE:
+theme matrix
+theme noir
+theme forensic
+theme alert
+        `;
+      break;
+
+    case "theme matrix":
+      setTheme("matrix");
+      response = "Theme switched to MATRIX mode.";
+      break;
+
+    case "theme noir":
+      setTheme("noir");
+      response = "Theme switched to NOIR mode.";
+      break;
+
+    case "theme forensic":
+      setTheme("forensic");
+      response = "Theme switched to FORENSIC mode.";
+      break;
+
+    case "theme alert":
+      setTheme("alert");
+      response = "WARNING: ALERT MODE ENABLED.";
+      break;
+
+    case "clear":
+      setLogs([]);
+      return;
+
+    default:
+      response = `
+UNKNOWN COMMAND: ${cmd}
+
+Type 'help' for available commands.
+        `;
+  }
+
+  setLogs((prev) => [
+    ...prev,
+    { type: "input", text: `> ${cmd}` },
+    { type: "output", text: response },
+  ]);
+};
 
   const onSubmit = (e) => {
     e.preventDefault();
+
     if (!input.trim()) return;
+
     handleCommand(input.trim());
+
     setInput("");
   };
 
   return (
-    <div style={styles.wrapper}>
-      <pre style={styles.header}>{asciiHeader}</pre>
+    <div
+      style={{
+        backgroundColor: currentTheme.bg,
+        height: "100vh",
+        color: currentTheme.primary,
+        fontFamily: "monospace",
+        padding: "20px",
+        display: "flex",
+        flexDirection: "column",
+        transition: "all 0.3s ease",
+      }}
+    >
+     
 
-      <div style={styles.panel}>
+      <pre
+        style={{
+          color: currentTheme.secondary,
+          fontSize: "12px",
+          lineHeight: "12px",
+          marginBottom: "20px",
+        }}
+      >
+        {asciiHeader}
+      </pre>
+
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          border: `1px solid ${currentTheme.border}`,
+          padding: "10px",
+          backgroundColor: currentTheme.panel,
+        }}
+      >
         {logs.map((log, i) => (
           <div
             key={i}
             style={{
-              ...styles.line,
+              whiteSpace: "pre-wrap",
+              marginBottom: "6px",
               color:
                 log.type === "system"
-                  ? "#66ffcc"
+                  ? currentTheme.secondary
                   : log.type === "input"
-                  ? "#ffffff"
-                  : "#00ff99",
+                  ? currentTheme.input
+                  : currentTheme.primary,
             }}
           >
             {log.text}
@@ -92,62 +233,38 @@ export default function Terminal() {
         ))}
       </div>
 
-      <form onSubmit={onSubmit} style={styles.inputBar}>
-        <span style={styles.prompt}>detectivedubu7@case-db:~$</span>
+      <form
+        onSubmit={onSubmit}
+        style={{
+          display: "flex",
+          borderTop: `1px solid ${currentTheme.border}`,
+          paddingTop: "10px",
+          marginTop: "10px",
+        }}
+      >
+        <span
+          style={{
+            color: currentTheme.secondary,
+            marginRight: "10px",
+          }}
+        >
+          detectivedubu7@case-db:~$
+        </span>
+
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          style={styles.input}
           autoFocus
+          style={{
+            flex: 1,
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            color: currentTheme.primary,
+            fontSize: "14px",
+          }}
         />
       </form>
     </div>
   );
 }
-
-const styles = {
-  wrapper: {
-    backgroundColor: "#050607",
-    height: "100vh",
-    color: "#00ff99",
-    fontFamily: "monospace",
-    padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-  },
-  header: {
-    color: "#66ffcc",
-    fontSize: "12px",
-    lineHeight: "12px",
-    marginBottom: "20px",
-  },
-  panel: {
-    flex: 1,
-    overflowY: "auto",
-    border: "1px solid #0f2a22",
-    padding: "10px",
-    backgroundColor: "#070a0c",
-  },
-  line: {
-    whiteSpace: "pre-wrap",
-    marginBottom: "6px",
-  },
-  inputBar: {
-    display: "flex",
-    borderTop: "1px solid #0f2a22",
-    paddingTop: "10px",
-    marginTop: "10px",
-  },
-  prompt: {
-    color: "#66ffcc",
-    marginRight: "10px",
-  },
-  input: {
-    flex: 1,
-    background: "transparent",
-    border: "none",
-    outline: "none",
-    color: "#00ff99",
-    fontSize: "14px",
-  },
-};
