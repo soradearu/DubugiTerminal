@@ -87,9 +87,9 @@ COMMANDS:
       response = `
 ACTIVE CASE FILES:
 
-[CASE-014] Phantom Data Leak
-[CASE-021] Black Market Identity Ring
-[CASE-033] Ghost Login Intrusion
+[CASE-014] 
+[CASE-021] 
+[CASE-033] 
         `;
       break;
 
@@ -106,9 +106,9 @@ STATUS: ACTIVE INVESTIGATION UNIT
       response = `
 EVIDENCE LOG:
 
-- encrypted packet cluster recovered
-- suspicious proxy chain detected
-- dark-web credential trace identified
+- 
+- 
+- 
         `;
       break;
 
