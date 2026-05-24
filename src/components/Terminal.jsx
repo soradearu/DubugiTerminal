@@ -65,57 +65,173 @@ export default function Terminal() {
       CYBER DETECTIVE DATABASE
 `;
 
-const handleCommand = (cmd) => {
-  let response = "";
+  const generatePacketCapture = () => {
+    const protocols = ["TCP", "HTTPS", "TLS", "DNS", "SSH"];
+    const ips = [
+      "192.168.1.7",
+      "10.0.0.5",
+      "45.33.32.156",
+      "91.214.124.88",
+      "185.220.101.4",
+      "104.21.44.12",
+      "172.67.2.91",
+    ];
 
-  const command = cmd.toLowerCase().trim();
+    let output = `
+PACKET CAPTURE ACTIVE
+────────────────────────────────────────────────────────────
 
-  switch (command) {
-    case "help":
-      response = `
+TIME        SRC IP          DEST IP         PROTOCOL   SIZE
+`;
+
+    for (let i = 0; i < 10; i++) {
+      const src = ips[Math.floor(Math.random() * ips.length)];
+      const dest = ips[Math.floor(Math.random() * ips.length)];
+      const protocol =
+        protocols[Math.floor(Math.random() * protocols.length)];
+
+      const size = Math.floor(Math.random() * 2000) + "B";
+
+      output += `
+03:41:${10 + i}    ${src.padEnd(15)} ${dest.padEnd(
+        15
+      )} ${protocol.padEnd(8)} ${size}
+`;
+    }
+
+    output += `
+
+ANALYSIS:
+- abnormal encrypted traffic detected
+- possible proxy relay identified
+- suspicious SSH handshake intercepted
+- packet inspection recommended
+
+STATUS: LIVE MONITORING...
+`;
+
+    return output;
+  };
+
+  const generatePortScan = () => {
+    return `
+PORT SCAN RESULTS
+────────────────────────
+
+PORT     STATUS      SERVICE
+22       OPEN        SSH
+53       OPEN        DNS
+80       OPEN        HTTP
+443      OPEN        HTTPS
+3306     FILTERED    MYSQL
+8080     CLOSED      HTTP-ALT
+
+ANALYSIS:
+- exposed SSH service detected
+- possible reverse proxy configured
+- recommend firewall inspection
+`;
+  };
+
+  const generateTrace = () => {
+    return `
+TRACE ROUTE INITIATED
+────────────────────────
+
+HOP 1   192.168.1.1
+HOP 2   10.10.0.1
+HOP 3   172.67.2.91
+HOP 4   185.220.101.4
+
+WARNING:
+TOR EXIT NODE DETECTED
+LOCATION MASKING ACTIVE
+TRACE CONFIDENCE: LOW
+`;
+  };
+
+  const handleCommand = (cmd) => {
+    let response = "";
+
+    const command = cmd.toLowerCase().trim();
+
+    switch (command) {
+      case "help":
+        response = `
 COMMANDS:
-- cases
-- profile
-- evidence
-- themes
-- theme [name]
+────────────────────────
+
+GENERAL
+- help
 - clear
+- profile
+- cases
+- evidence
+
+THEMES
+- themes
+- theme matrix
+- theme noir
+- theme forensic
+- theme alert
+
+NETWORK ANALYSIS
+- pcap
+- packet
+- capture traffic
+- scan ports
+- trace ip
+
         `;
-      break;
+        break;
 
-    case "cases":
-      response = `
-ACTIVE CASE FILES:
+      case "cases":
+        response = `
+ACTIVE CASE FILES
+────────────────────────
 
-[CASE-014] 
-[CASE-021] 
-[CASE-033] 
+[CASE-014] Phantom Data Leak
+STATUS: ACTIVE
+
+[CASE-021] Black Market Identity Ring
+STATUS: UNDER REVIEW
+
+[CASE-033] Ghost Login Intrusion
+STATUS: HIGH PRIORITY
         `;
-      break;
+        break;
 
-    case "profile":
-      response = `
+      case "profile":
+        response = `
+AGENT PROFILE
+────────────────────────
+
 AGENT ID: Dubugi-07
 CLEARANCE: LEVEL 4
-SPECIALTY: Behavioral Cyber Forensics / SOC Analyst
-STATUS: ACTIVE INVESTIGATION UNIT
+SPECIALTY: Behavioral Cyber Forensics
+ROLE: SOC Analyst
+
+STATUS: ACTIVE
         `;
-      break;
+        break;
 
-    case "evidence":
-      response = `
-EVIDENCE LOG:
+      case "evidence":
+        response = `
+EVIDENCE LOG
+────────────────────────
 
-- 
-- 
-- 
+- encrypted packet cluster recovered
+- suspicious outbound connection
+- unauthorized SSH handshake detected
+- dark-web credential leak linked
         `;
-      break;
+        break;
 
-    case "themes":
-    case "theme":
-      response = `
-AVAILABLE THEMES:
+      case "themes":
+      case "theme":
+        response = `
+AVAILABLE THEMES
+────────────────────────
 
 - matrix
 - noir
@@ -128,46 +244,60 @@ theme noir
 theme forensic
 theme alert
         `;
-      break;
+        break;
 
-    case "theme matrix":
-      setTheme("matrix");
-      response = "Theme switched to MATRIX mode.";
-      break;
+      case "theme matrix":
+        setTheme("matrix");
+        response = "THEME UPDATED → MATRIX";
+        break;
 
-    case "theme noir":
-      setTheme("noir");
-      response = "Theme switched to NOIR mode.";
-      break;
+      case "theme noir":
+        setTheme("noir");
+        response = "THEME UPDATED → NOIR";
+        break;
 
-    case "theme forensic":
-      setTheme("forensic");
-      response = "Theme switched to FORENSIC mode.";
-      break;
+      case "theme forensic":
+        setTheme("forensic");
+        response = "THEME UPDATED → FORENSIC";
+        break;
 
-    case "theme alert":
-      setTheme("alert");
-      response = "WARNING: ALERT MODE ENABLED.";
-      break;
+      case "theme alert":
+        setTheme("alert");
+        response = "WARNING: ALERT MODE ENABLED";
+        break;
 
-    case "clear":
-      setLogs([]);
-      return;
+      case "pcap":
+      case "packet":
+      case "capture traffic":
+        response = generatePacketCapture();
+        break;
 
-    default:
-      response = `
+      case "scan ports":
+        response = generatePortScan();
+        break;
+
+      case "trace ip":
+        response = generateTrace();
+        break;
+
+      case "clear":
+        setLogs([]);
+        return;
+
+      default:
+        response = `
 UNKNOWN COMMAND: ${cmd}
 
 Type 'help' for available commands.
         `;
-  }
+    }
 
-  setLogs((prev) => [
-    ...prev,
-    { type: "input", text: `> ${cmd}` },
-    { type: "output", text: response },
-  ]);
-};
+    setLogs((prev) => [
+      ...prev,
+      { type: "input", text: `> ${cmd}` },
+      { type: "output", text: response },
+    ]);
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -192,14 +322,13 @@ Type 'help' for available commands.
         transition: "all 0.3s ease",
       }}
     >
-     
-
       <pre
         style={{
           color: currentTheme.secondary,
           fontSize: "12px",
           lineHeight: "12px",
           marginBottom: "20px",
+          textShadow: `0 0 10px ${currentTheme.primary}`,
         }}
       >
         {asciiHeader}
@@ -210,8 +339,9 @@ Type 'help' for available commands.
           flex: 1,
           overflowY: "auto",
           border: `1px solid ${currentTheme.border}`,
-          padding: "10px",
+          padding: "15px",
           backgroundColor: currentTheme.panel,
+          boxShadow: `0 0 20px ${currentTheme.border}`,
         }}
       >
         {logs.map((log, i) => (
@@ -219,7 +349,8 @@ Type 'help' for available commands.
             key={i}
             style={{
               whiteSpace: "pre-wrap",
-              marginBottom: "6px",
+              marginBottom: "10px",
+              lineHeight: "1.5",
               color:
                 log.type === "system"
                   ? currentTheme.secondary
@@ -238,7 +369,7 @@ Type 'help' for available commands.
         style={{
           display: "flex",
           borderTop: `1px solid ${currentTheme.border}`,
-          paddingTop: "10px",
+          paddingTop: "12px",
           marginTop: "10px",
         }}
       >
@@ -246,6 +377,7 @@ Type 'help' for available commands.
           style={{
             color: currentTheme.secondary,
             marginRight: "10px",
+            textShadow: `0 0 10px ${currentTheme.primary}`,
           }}
         >
           detectivedubu7@case-db:~$
@@ -262,6 +394,7 @@ Type 'help' for available commands.
             outline: "none",
             color: currentTheme.primary,
             fontSize: "14px",
+            fontFamily: "monospace",
           }}
         />
       </form>
